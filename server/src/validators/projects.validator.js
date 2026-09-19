@@ -15,11 +15,15 @@ export const projectBodySchema = z.object({
   status: z.enum(["pending", "complete"]).default("pending"),
 });
 
-export const projectUpdateSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  description: z.string().max(255).nullable().optional(),
-  status: z.enum(["pending", "complete"]).optional(),
-});
+export const projectUpdateSchema = z
+  .object({
+    name: z.string().min(1).max(100).optional(),
+    description: z.string().max(255).nullable().optional(),
+    status: z.enum(["pending", "complete"]).optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required for update",
+  });
 export const projectIdSchema = z.object({
   id: z.coerce.number().int().min(1),
 });

@@ -85,3 +85,47 @@ export const createProjectForUser = async (
     projects: insertValues.rows[0],
   };
 };
+export const updateProjectForUser = async (userId, projectId, updateData) => {
+  const fields = Object.keys(updateData);
+  const values = Object.values(updateData);
+
+  const setClauses = fields.map((field, index) => {
+    return `${field} = $${index + 1}`;
+  });
+  values.push(projectId, userId);
+
+  const updatedValues = await pool.query(
+    `
+  UPDATE projects
+  SET ${setClauses.join(", ")},updated_at = CURRENT_TIMESTAMP
+  WHERE id = $${fields.length + 1}
+  AND user_id = $${fields.length + 2}
+  RETURNING *;
+  `,
+    values,
+  );
+
+  if (updatedValues.rows.length === 0) {
+    return null;
+  }
+
+  return updatedValues.rows[0];
+};
+
+export const deleteProjectForUser = async (userId, projectId) => {
+  const deletedValues = await pool.query(
+    `
+    DELETE FROM projects
+    WHERE id = $1
+    AND user_id = $2
+    RETURNING *;
+    `,
+    [projectId, userId],
+  );
+
+  if (deletedValues.rows.length === 0) {
+    return null;
+  }
+
+  return deletedValues.rows[0];
+};

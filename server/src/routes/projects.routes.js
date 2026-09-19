@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createProject,
+  deleteProject,
   getProjects,
   updateProject,
 } from "../controllers/projects.controller.js";
@@ -22,4 +23,5 @@ router.patch(
   validate(projectUpdateSchema, "body"),
   updateProject,
 );
+router.delete("/:id", validate(projectIdSchema, "params"), deleteProject);
 export default router;
