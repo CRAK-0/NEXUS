@@ -1,7 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
-import pool from "./db/index.js";
 import projectsRouter from "./routes/projects.routes.js";
+import taskRouter from "./routes/tasks.routes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 dotenv.config();
 
@@ -17,6 +18,9 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/projects", projectsRouter);
+app.use("/api/projects", taskRouter);
+app.use("/api/tasks", taskRouter);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

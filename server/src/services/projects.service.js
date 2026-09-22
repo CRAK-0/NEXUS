@@ -1,4 +1,5 @@
 import pool from "../db/index.js";
+import { AppError } from "../utils/AppError.js";
 
 export const getProjectsForUser = async (
   userId,
@@ -124,7 +125,7 @@ export const deleteProjectForUser = async (userId, projectId) => {
   );
 
   if (deletedValues.rows.length === 0) {
-    return null;
+    throw new AppError("Project not found", 404);
   }
 
   return deletedValues.rows[0];

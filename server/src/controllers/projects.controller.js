@@ -5,9 +5,9 @@ import {
   updateProjectForUser,
 } from "../services/projects.service.js";
 
-export const getProjects = async (req, res) => {
+export const getProjects = async (req, res, next) => {
   try {
-    const { status, search, page, limit, sort, order } = req.validated;
+    const { status, search, page, limit, sort, order } = req.validated.query;
 
     const normalizedSearch = search ? `%${search}%` : null;
 
@@ -29,14 +29,11 @@ export const getProjects = async (req, res) => {
       projects,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch projects",
-    });
+    next(error);
   }
 };
 
-export const createProject = async (req, res) => {
+export const createProject = async (req, res, next) => {
   try {
     const { name, description, status } = req.validated;
 
@@ -47,16 +44,11 @@ export const createProject = async (req, res) => {
       project,
     });
   } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to create project",
-    });
+    next(error);
   }
 };
 
-export const updateProject = async (req, res) => {
+export const updateProject = async (req, res, next) => {
   try {
     const { id } = req.validated.params;
     const updateData = req.validated.body;
@@ -76,33 +68,21 @@ export const updateProject = async (req, res) => {
       project: updatedProject,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to update project",
-    });
+    next(error);
   }
 };
-export const deleteProject = async (req, res) => {
+export const deleteProject = async (req, res, next) => {
   try {
     const { id } = req.validated.params;
     const userId = 1;
 
     const deleteValue = await deleteProjectForUser(userId, id);
 
-    if (!deleteValue) {
-      return res.status(404).json({
-        success: false,
-        message: "Project not found",
-      });
-    }
     res.json({
       success: true,
       project: deleteValue,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete project",
-    });
+    next(error);
   }
 };
