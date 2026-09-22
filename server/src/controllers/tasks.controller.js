@@ -1,4 +1,3 @@
-import { success } from "zod";
 import {
   createTaskForUser,
   deleteTaskForUser,
@@ -11,7 +10,7 @@ export const createTask = async (req, res, next) => {
     const { projectId } = req.validated.params;
     const taskData = req.validated.body;
 
-    const userId = 1;
+    const userId = req.user.id;
 
     const task = await createTaskForUser(userId, projectId, taskData);
 
@@ -28,7 +27,7 @@ export const getTasks = async (req, res, next) => {
   try {
     const { projectId } = req.validated.params;
 
-    const userId = 1;
+    const userId = req.user.id;
 
     const tasks = await getTasksForProject(userId, projectId);
 
@@ -47,7 +46,7 @@ export const updateTask = async (req, res, next) => {
     const { id } = req.validated.params;
     const updateData = req.validated.body;
 
-    const userId = 1;
+    const userId = req.user.id;
 
     const task = await updateTaskForUser(userId, id, updateData);
 
@@ -64,7 +63,7 @@ export const deleteTask = async (req, res, next) => {
   try {
     const { id } = req.validated.params;
 
-    const userId = 1;
+    const userId = req.user.id;
 
     const task = await deleteTaskForUser(userId, id);
 

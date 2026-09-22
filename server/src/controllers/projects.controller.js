@@ -12,7 +12,7 @@ export const getProjects = async (req, res, next) => {
     const normalizedSearch = search ? `%${search}%` : null;
 
     const projects = await getProjectsForUser(
-      1,
+      req.user.id,
       status,
       normalizedSearch,
       page,
@@ -35,9 +35,14 @@ export const getProjects = async (req, res, next) => {
 
 export const createProject = async (req, res, next) => {
   try {
-    const { name, description, status } = req.validated;
+    const { name, description, status } = req.validated.body;
 
-    const project = await createProjectForUser(1, name, description, status);
+    const project = await createProjectForUser(
+      req.user.id,
+      name,
+      description,
+      status,
+    );
 
     res.status(201).json({
       success: true,
@@ -53,7 +58,11 @@ export const updateProject = async (req, res, next) => {
     const { id } = req.validated.params;
     const updateData = req.validated.body;
 
-    const updatedProject = await updateProjectForUser(1, id, updateData);
+    const updatedProject = await updateProjectForUser(
+      req.user.id,
+      id,
+      updateData,
+    );
 
     // Put it HERE
     if (!updatedProject) {
@@ -74,7 +83,7 @@ export const updateProject = async (req, res, next) => {
 export const deleteProject = async (req, res, next) => {
   try {
     const { id } = req.validated.params;
-    const userId = 1;
+    const userId = req.user.id;
 
     const deleteValue = await deleteProjectForUser(userId, id);
 
