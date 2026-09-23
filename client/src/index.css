@@ -1,1 +1,15 @@
+:root {
+  --color-background: #0d0f12;
+  --color-surface: #171a1f;
+  --color-border: #292e36;
+  --color-text: #e7e9ed;
+}
+
 @import "tailwindcss";
+
+@theme {
+  --color-background: var(--color-background);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-text: var(--color-text);
+}

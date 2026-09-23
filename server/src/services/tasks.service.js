@@ -168,3 +168,18 @@ export const deleteTaskForUser = async (userId, taskId) => {
     client.release();
   }
 };
+export const getAllTasksForUser = async (userId) => {
+  const result = await pool.query(
+    `
+    SELECT tasks.*
+    FROM tasks
+    JOIN projects
+      ON tasks.project_id = projects.id
+    WHERE projects.user_id = $1
+    ORDER BY tasks.created_at DESC;
+    `,
+    [userId],
+  );
+
+  return result.rows;
+};

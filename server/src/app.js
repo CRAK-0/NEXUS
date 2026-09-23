@@ -35,6 +35,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/projects", authenticate, projectsRouter);
 app.use("/api/projects", authenticate, taskRouter);
+app.use("/api/tasks", authenticate, taskRouter);
 app.use("/api/notes", authenticate, notesRouter);
 app.use("/api/activities", authenticate, activitiesRouter);
 app.use(errorHandler);

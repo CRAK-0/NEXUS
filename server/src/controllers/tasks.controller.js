@@ -1,6 +1,7 @@
 import {
   createTaskForUser,
   deleteTaskForUser,
+  getAllTasksForUser,
   getTasksForProject,
   updateTaskForUser,
 } from "../services/tasks.service.js";
@@ -70,6 +71,20 @@ export const deleteTask = async (req, res, next) => {
     res.json({
       success: true,
       task,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getAllTasks = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const tasks = await getAllTasksForUser(userId);
+
+    res.json({
+      success: true,
+      tasks,
     });
   } catch (error) {
     next(error);
