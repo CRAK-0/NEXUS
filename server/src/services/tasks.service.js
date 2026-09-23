@@ -1,34 +1,50 @@
 import pool from "../db/index.js";
 import { AppError } from "../utils/AppError.js";
+import { createActivity } from "./activities.service.js";
 
 export const createTaskForUser = async (userId, projectId, taskData) => {
-  const projectResult = await pool.query(
-    `
-  SELECT id
-  FROM projects
-  WHERE id = $1
-  AND user_id = $2;
-  `,
-    [projectId, userId],
-  );
+  const client = await pool.connect();
 
-  if (projectResult.rows.length === 0) {
-    throw new AppError("Project not found", 404);
+  try {
+    await client.query("BEGIN");
+
+    const { title, description, status, priority, due_date } = taskData;
+
+    const result = await client.query(
+      `
+      INSERT INTO tasks
+      (project_id, title, description, status, priority, due_date)
+      SELECT
+        $1, $2, $3, $4, $5, $6
+      WHERE EXISTS (
+        SELECT 1
+        FROM projects
+        WHERE projects.id = $1
+        AND projects.user_id = $7
+      )
+      RETURNING *;
+      `,
+      [projectId, title, description, status, priority, due_date, userId],
+    );
+
+    if (result.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const task = result.rows[0];
+
+    await createActivity(client, userId, "created", "task", task.id);
+
+    await client.query("COMMIT");
+
+    return task;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  const { title, description, status, priority, due_date } = taskData;
-
-  const result = await pool.query(
-    `
-  INSERT INTO tasks
-  (project_id, title, description, status, priority, due_date)
-  VALUES
-  ($1, $2, $3, $4, $5, $6)
-  RETURNING *;
-  `,
-    [projectId, title, description, status, priority, due_date],
-  );
-  return result.rows[0];
 };
 
 export const getTasksForProject = async (userId, projectId) => {
@@ -62,58 +78,93 @@ export const getTasksForProject = async (userId, projectId) => {
 };
 
 export const updateTaskForUser = async (userId, taskId, updateData) => {
-  const fields = Object.keys(updateData);
-  const values = Object.values(updateData);
+  const client = await pool.connect();
 
-  const setClauses = fields.map((field, index) => {
-    return `${field} = $${index + 1}`;
-  });
+  try {
+    await client.query("BEGIN");
 
-  values.push(taskId, userId);
+    const fields = Object.keys(updateData);
+    const values = Object.values(updateData);
 
-  console.log({
-    userId,
-    taskId,
-    updateData,
-  });
+    const setClauses = fields.map((field, index) => {
+      return `${field} = $${index + 1}`;
+    });
 
-  const result = await pool.query(
-    `
-    UPDATE tasks
-    SET ${setClauses.join(", ")},
-        updated_at = CURRENT_TIMESTAMP
-    FROM projects
-    WHERE tasks.id = $${fields.length + 1}
-    AND tasks.project_id = projects.id
-    AND projects.user_id = $${fields.length + 2}
-    RETURNING tasks.*;
-    `,
-    values,
-  );
+    values.push(taskId, userId);
 
-  if (result.rows.length === 0) {
-    throw new AppError("Task not found", 404);
+    const result = await client.query(
+      `
+      UPDATE tasks
+      SET ${setClauses.join(", ")},
+          updated_at = CURRENT_TIMESTAMP
+      WHERE tasks.id = $${fields.length + 1}
+      AND EXISTS (
+        SELECT 1
+        FROM projects
+        WHERE projects.id = tasks.project_id
+        AND projects.user_id = $${fields.length + 2}
+      )
+      RETURNING *;
+      `,
+      values,
+    );
+
+    if (result.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const task = result.rows[0];
+
+    const action = task.status === "complete" ? "completed" : "updated";
+
+    await createActivity(client, userId, action, "task", task.id);
+
+    await client.query("COMMIT");
+
+    return task;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  return result.rows[0];
 };
 
 export const deleteTaskForUser = async (userId, taskId) => {
-  const result = await pool.query(
-    `
-    DELETE FROM tasks
-    USING projects
-    WHERE tasks.id = $1
-    AND tasks.project_id = projects.id
-    AND projects.user_id = $2
-    RETURNING tasks.*;
-    `,
-    [taskId, userId],
-  );
+  const client = await pool.connect();
 
-  if (result.rows.length === 0) {
-    throw new AppError("Task not found", 404);
+  try {
+    await client.query("BEGIN");
+
+    const result = await client.query(
+      `
+      DELETE FROM tasks
+      USING projects
+      WHERE tasks.id = $1
+      AND tasks.project_id = projects.id
+      AND projects.user_id = $2
+      RETURNING tasks.*;
+      `,
+      [taskId, userId],
+    );
+
+    if (result.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const task = result.rows[0];
+
+    await createActivity(client, userId, "deleted", "task", task.id);
+
+    await client.query("COMMIT");
+
+    return task;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  return result.rows[0];
 };

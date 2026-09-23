@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import { authenticate } from "./middlewares/auth.js";
+import activitiesRouter from "./routes/activities.routes.js";
 
 dotenv.config();
 
@@ -23,11 +24,11 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+app.use("/api/auth", authRouter);
 app.use("/api/projects", authenticate, projectsRouter);
 app.use("/api/projects", authenticate, taskRouter);
-app.use("/api/tasks", authenticate, taskRouter);
 app.use("/api/notes", authenticate, notesRouter);
-app.use("/api/auth", authRouter);
+app.use("/api/activities", authenticate, activitiesRouter);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

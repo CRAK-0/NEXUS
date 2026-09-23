@@ -1,5 +1,5 @@
 import pool from "../db/index.js";
-import { AppError } from "../utils/AppError.js";
+import { createActivity } from "./activities.service.js";
 
 export const getProjectsForUser = async (
   userId,
@@ -73,60 +73,115 @@ export const createProjectForUser = async (
   description,
   status,
 ) => {
-  const insertValues = await pool.query(
-    `INSERT INTO projects
-    (user_id, name, description, status)
-    VALUES
-    ($1, $2, $3, $4)
-    RETURNING *;
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const result = await client.query(
+      `
+      INSERT INTO projects
+      (user_id, name, description, status)
+      VALUES
+      ($1, $2, $3, $4)
+      RETURNING *;
       `,
-    [userId, name, description, status],
-  );
-  return {
-    projects: insertValues.rows[0],
-  };
+      [userId, name, description, status],
+    );
+
+    const project = result.rows[0];
+
+    await createActivity(client, userId, "created", "project", project.id);
+
+    await client.query("COMMIT");
+
+    return project;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 export const updateProjectForUser = async (userId, projectId, updateData) => {
-  const fields = Object.keys(updateData);
-  const values = Object.values(updateData);
+  const client = await pool.connect();
 
-  const setClauses = fields.map((field, index) => {
-    return `${field} = $${index + 1}`;
-  });
-  values.push(projectId, userId);
+  try {
+    await client.query("BEGIN");
 
-  const updatedValues = await pool.query(
-    `
-  UPDATE projects
-  SET ${setClauses.join(", ")},updated_at = CURRENT_TIMESTAMP
-  WHERE id = $${fields.length + 1}
-  AND user_id = $${fields.length + 2}
-  RETURNING *;
-  `,
-    values,
-  );
+    const fields = Object.keys(updateData);
+    const values = Object.values(updateData);
 
-  if (updatedValues.rows.length === 0) {
-    return null;
+    const setClauses = fields.map((field, index) => {
+      return `${field} = $${index + 1}`;
+    });
+    values.push(projectId, userId);
+
+    const updatedValues = await client.query(
+      `
+    UPDATE projects
+    SET ${setClauses.join(", ")},updated_at = CURRENT_TIMESTAMP
+    WHERE id = $${fields.length + 1}
+    AND user_id = $${fields.length + 2}
+    RETURNING *;
+    `,
+      values,
+    );
+
+    if (updatedValues.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const project = updatedValues.rows[0];
+
+    const action = "updated";
+
+    await createActivity(client, userId, action, "project", project.id);
+
+    await client.query("COMMIT");
+
+    return project;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  return updatedValues.rows[0];
 };
 
 export const deleteProjectForUser = async (userId, projectId) => {
-  const deletedValues = await pool.query(
-    `
-    DELETE FROM projects
-    WHERE id = $1
-    AND user_id = $2
-    RETURNING *;
-    `,
-    [projectId, userId],
-  );
+  const client = await pool.connect();
 
-  if (deletedValues.rows.length === 0) {
-    throw new AppError("Project not found", 404);
+  try {
+    await client.query("BEGIN");
+
+    const result = await client.query(
+      `
+      DELETE FROM projects
+      WHERE id = $1
+      AND user_id = $2
+      RETURNING *;
+      `,
+      [projectId, userId],
+    );
+
+    if (result.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const project = result.rows[0];
+
+    await createActivity(client, userId, "deleted", "project", project.id);
+
+    await client.query("COMMIT");
+
+    return project;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-
-  return deletedValues.rows[0];
 };

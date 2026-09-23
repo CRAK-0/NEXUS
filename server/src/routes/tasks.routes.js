@@ -29,12 +29,12 @@ router.get(
 );
 
 router.patch(
-  "/:id",
+  "/tasks/:id",
   validate(taskIdSchema, "params"),
   validate(taskUpdateSchema, "body"),
   updateTask,
 );
 
-router.delete("/:id", validate(taskIdSchema, "params"), deleteTask);
+router.delete("/tasks/:id", validate(taskIdSchema, "params"), deleteTask);
 
 export default router;
