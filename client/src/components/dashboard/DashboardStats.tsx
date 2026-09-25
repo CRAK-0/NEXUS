@@ -1,5 +1,6 @@
 import { useProjects } from "../../hook/useProjects.ts";
 import { useTasks } from "../../hook/useTasks.ts";
+import { useNotes } from "../../hook/useNotes.ts"; 
 
 const DashboardStats = () => {
   const {
@@ -8,6 +9,11 @@ const DashboardStats = () => {
     isError: projectsError,
   } = useProjects();
   
+const {
+  data: notesData,
+  isPending: notesPending,
+  isError: notesError,
+} = useNotes();
 
   const {
   data: tasksData,
@@ -27,6 +33,9 @@ const DashboardStats = () => {
   const taskCount =
     tasksData?.tasks.length ?? 0;
 
+    const noteCount = notesData?.notes.length ?? 0;
+
+    
   return (
     <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
       {/* Projects */}
@@ -66,7 +75,11 @@ const DashboardStats = () => {
         </p>
 
         <p className="mt-3 text-3xl font-semibold text-text">
-          16
+          {notesPending
+    ? "..."
+    : notesError
+      ? "-"
+      : noteCount}
         </p>
       </div>
     </section>
