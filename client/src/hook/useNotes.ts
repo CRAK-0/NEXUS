@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getNotes } from "../services/noteService.ts";
+import { getNotes } from "../services/noteService";
 
 export const useNotes = () => {
   return useQuery({

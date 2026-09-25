@@ -49,7 +49,7 @@ export const getProjects = async (
 
 export interface CreateProjectData {
   name: string;
-  description: string;
+  description?: string;
 }
 export const createProject = async (
   data: CreateProjectData,
@@ -61,7 +61,7 @@ export const createProject = async (
 
 export interface UpdateProjectData {
   name: string;
-  description: string;
+  description?: string;
 }
 
 export const updateProject = async (
@@ -71,4 +71,9 @@ export const updateProject = async (
   const response = await api.patch(`/projects/${id}`, data);
 
   return response.data.project;
+};
+export const deleteProject = async (
+  id: number,
+): Promise<void> => {
+  await api.delete(`/projects/${id}`);
 };
