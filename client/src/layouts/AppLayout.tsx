@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.tsx";
+import SearchBar from "../components/search/SearchBar.tsx";
 
 const AppLayout = () => {
   const { user, logout } = useAuth();
@@ -104,6 +105,8 @@ const AppLayout = () => {
           <p className="text-sm text-text/60">
             Workspace
           </p>
+
+          <SearchBar/>
 
           <p className="text-sm text-text/70">
             {user?.username}

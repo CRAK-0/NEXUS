@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import { authenticate } from "./middlewares/auth.js";
 import activitiesRouter from "./routes/activities.routes.js";
 import cors from "cors";
+import searchRouter from "./routes/search.routes.js";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/api/projects", authenticate, taskRouter);
 app.use("/api/tasks", authenticate, taskRouter);
 app.use("/api/notes", authenticate, notesRouter);
 app.use("/api/activities", authenticate, activitiesRouter);
+app.use("/api/search", authenticate, searchRouter);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
