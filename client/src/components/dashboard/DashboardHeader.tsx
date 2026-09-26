@@ -1,11 +1,11 @@
 const DashboardHeader = () => {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold text-text">
+    <div className="space-y-1">
+      <h1 className="text-3xl font-semibold tracking-tight text-text">
         Dashboard
       </h1>
 
-      <p className="mt-1 text-sm text-text/60">
+      <p className="text-sm text-text/60">
         A quick overview of your workspace.
       </p>
     </div>

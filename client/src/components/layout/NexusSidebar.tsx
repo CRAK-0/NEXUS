@@ -24,6 +24,12 @@ import {
   RiLogoutBoxLine
 } from "@remixicon/react";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 const NexusSidebar = () => {
   const { user, logout } = useAuth();
 
@@ -82,16 +88,32 @@ const { state } = useSidebar();
               {navItems.map((item) => {
   const Icon = item.icon;
 
+  const button = (
+    <NavLink to={item.path}>
+      {({ isActive }) => (
+        <SidebarMenuButton isActive={isActive}>
+          <Icon />
+          <span>{item.label}</span>
+        </SidebarMenuButton>
+      )}
+    </NavLink>
+  );
+
   return (
     <SidebarMenuItem key={item.path}>
-      <NavLink to={item.path}>
-  {({ isActive }) => (
-    <SidebarMenuButton isActive={isActive}>
-      <Icon />
-      <span>{item.label}</span>
-    </SidebarMenuButton>
-  )}
-</NavLink>
+      {state === "collapsed" ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {button}
+          </TooltipTrigger>
+
+          <TooltipContent side="right">
+            {item.label}
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        button
+      )}
     </SidebarMenuItem>
   );
 })}

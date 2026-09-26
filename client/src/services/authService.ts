@@ -22,3 +22,14 @@ export const getCurrentUser = async () => {
 
   return response.data;
 };
+
+export interface RegisterData {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export const register = async (data: RegisterData) => {
+  const response = await api.post("/auth/register", data);
+  return response.data;
+};

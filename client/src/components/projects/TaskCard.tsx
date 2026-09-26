@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import type { Task } from "../../services/taskService";
 
 interface TaskCardProps {
@@ -5,28 +7,34 @@ interface TaskCardProps {
 }
 
 const TaskCard = ({ task }: TaskCardProps) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="rounded-lg border border-border bg-surface p-5">
+    <button
+      type="button"
+      onClick={() => navigate("/tasks")}
+      className="w-full rounded-xl border border-border bg-surface p-5 text-left transition-colors hover:border-text/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-text/40"
+    >
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <h3 className="font-medium text-text">
             {task.title}
           </h3>
 
           {task.description && (
-            <p className="mt-1 text-sm text-text/50">
+            <p className="mt-1 line-clamp-2 text-sm leading-6 text-text/50">
               {task.description}
             </p>
           )}
         </div>
 
-        <span className="shrink-0 rounded-md border border-border px-2.5 py-1 text-xs text-text/60">
+        <span className="shrink-0 rounded-full border border-border px-2.5 py-1 text-xs font-medium capitalize text-text/60">
           {task.status}
         </span>
       </div>
 
-      <div className="mt-4 flex items-center gap-4 text-xs text-text/50">
-        <span>
+      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-text/50">
+        <span className="capitalize">
           Priority: {task.priority}
         </span>
 
@@ -36,7 +44,7 @@ const TaskCard = ({ task }: TaskCardProps) => {
           </span>
         )}
       </div>
-    </div>
+    </button>
   );
 };
 

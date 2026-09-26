@@ -8,107 +8,172 @@
 
 :root {
   /* NEXUS colors */
-  --color-background: #0d0f12;
-  --color-surface: #171a1f;
-  --color-border: #292e36;
-  --color-text: #e7e9ed;
+  --color-background: #0a0f14;
+  --color-surface: #111923;
+  --color-border: #253241;
+  --color-text: #e6edf3;
 
   /* shadcn semantic colors */
-  --background: #0d0f12;
-  --foreground: #e7e9ed;
+  --background: #0a0f14;
+  --foreground: #e6edf3;
 
-  --card: #171a1f;
-  --card-foreground: #e7e9ed;
+  --card: #111923;
+  --card-foreground: #e6edf3;
 
-  --popover: #171a1f;
-  --popover-foreground: #e7e9ed;
+  --popover: #111923;
+  --popover-foreground: #e6edf3;
 
-  --primary: #e7e9ed;
-  --primary-foreground: #0d0f12;
+  --primary: #e6edf3;
+  --primary-foreground: #0a0f14;
 
-  --secondary: #292e36;
-  --secondary-foreground: #e7e9ed;
+  --secondary: #253241;
+  --secondary-foreground: #e6edf3;
 
-  --muted: #292e36;
-  --muted-foreground: #e7e9ed;
+  --muted: #253241;
+  --muted-foreground: #9aa8b6;
 
-  --accent: #292e36;
-  --accent-foreground: #e7e9ed;
+  --accent: #253241;
+  --accent-foreground: #e6edf3;
 
-  --destructive: #292e36;
-  --destructive-foreground: #e7e9ed;
+  --destructive: #b94a48;
+  --destructive-foreground: #ffffff;
 
-  --border: #292e36;
-  --input: #292e36;
-  --ring: #e7e9ed;
+  --border: #253241;
+  --input: #253241;
+  --ring: #e6edf3;
 
   /* Charts */
-  --chart-1: #e7e9ed;
-  --chart-2: #292e36;
-  --chart-3: #171a1f;
-  --chart-4: #0d0f12;
-  --chart-5: #e7e9ed;
+  --chart-1: #e6edf3;
+  --chart-2: #8fa2b5;
+  --chart-3: #5d7185;
+  --chart-4: #253241;
+  --chart-5: #111923;
 
   --radius: 0.625rem;
 
   /* Sidebar */
-  --sidebar: #171a1f;
-  --sidebar-foreground: #e7e9ed;
+  --sidebar: #111923;
+  --sidebar-foreground: #e6edf3;
 
-  --sidebar-primary: #e7e9ed;
-  --sidebar-primary-foreground: #0d0f12;
+  --sidebar-primary: #e6edf3;
+  --sidebar-primary-foreground: #0a0f14;
 
-  --sidebar-accent: #292e36;
-  --sidebar-accent-foreground: #e7e9ed;
+  --sidebar-accent: #253241;
+  --sidebar-accent-foreground: #e6edf3;
 
-  --sidebar-border: #292e36;
-  --sidebar-ring: #e7e9ed;
+  --sidebar-border: #253241;
+  --sidebar-ring: #e6edf3;
 }
 
 /*
-  Keep shadcn's dark mode compatible with the NEXUS theme.
-  For now NEXUS uses one dark visual system.
+  Light theme
+  Cool gray + blue-gray
 */
+
+.light {
+  --color-background: #e9edf1;
+  --color-surface: #f8f9fa;
+  --color-border: #cfd6de;
+  --color-text: #1b232c;
+
+  --background: #e9edf1;
+  --foreground: #1b232c;
+
+  --card: #f8f9fa;
+  --card-foreground: #1b232c;
+
+  --popover: #f8f9fa;
+  --popover-foreground: #1b232c;
+
+  --primary: #1b232c;
+  --primary-foreground: #f8f9fa;
+
+  --secondary: #dfe5eb;
+  --secondary-foreground: #1b232c;
+
+  --muted: #dfe5eb;
+  --muted-foreground: #626d78;
+
+  --accent: #dfe5eb;
+  --accent-foreground: #1b232c;
+
+  --destructive: #b94a48;
+  --destructive-foreground: #ffffff;
+
+  --border: #cfd6de;
+  --input: #cfd6de;
+  --ring: #1b232c;
+
+  /* Charts */
+  --chart-1: #1b232c;
+  --chart-2: #536575;
+  --chart-3: #7e8d9b;
+  --chart-4: #aeb9c3;
+  --chart-5: #dfe5eb;
+
+  /* Sidebar */
+  --sidebar: #f8f9fa;
+  --sidebar-foreground: #1b232c;
+
+  --sidebar-primary: #1b232c;
+  --sidebar-primary-foreground: #f8f9fa;
+
+  --sidebar-accent: #dfe5eb;
+  --sidebar-accent-foreground: #1b232c;
+
+  --sidebar-border: #cfd6de;
+  --sidebar-ring: #1b232c;
+}
+
+/*
+  Dark theme
+*/
+
 .dark {
-  --background: #0d0f12;
-  --foreground: #e7e9ed;
+  --color-background: #0a0f14;
+  --color-surface: #111923;
+  --color-border: #253241;
+  --color-text: #e6edf3;
 
-  --card: #171a1f;
-  --card-foreground: #e7e9ed;
+  --background: #0a0f14;
+  --foreground: #e6edf3;
 
-  --popover: #171a1f;
-  --popover-foreground: #e7e9ed;
+  --card: #111923;
+  --card-foreground: #e6edf3;
 
-  --primary: #e7e9ed;
-  --primary-foreground: #0d0f12;
+  --popover: #111923;
+  --popover-foreground: #e6edf3;
 
-  --secondary: #292e36;
-  --secondary-foreground: #e7e9ed;
+  --primary: #e6edf3;
+  --primary-foreground: #0a0f14;
 
-  --muted: #292e36;
-  --muted-foreground: #e7e9ed;
+  --secondary: #253241;
+  --secondary-foreground: #e6edf3;
 
-  --accent: #292e36;
-  --accent-foreground: #e7e9ed;
+  --muted: #253241;
+  --muted-foreground: #9aa8b6;
 
-  --destructive: #292e36;
-  --destructive-foreground: #e7e9ed;
+  --accent: #253241;
+  --accent-foreground: #e6edf3;
 
-  --border: #292e36;
-  --input: #292e36;
-  --ring: #e7e9ed;
+  --destructive: #b94a48;
+  --destructive-foreground: #ffffff;
 
-  --sidebar: #171a1f;
-  --sidebar-foreground: #e7e9ed;
+  --border: #253241;
+  --input: #253241;
+  --ring: #e6edf3;
 
-  --sidebar-primary: #e7e9ed;
-  --sidebar-primary-foreground: #0d0f12;
+  --sidebar: #111923;
+  --sidebar-foreground: #e6edf3;
 
-  --sidebar-accent: #292e36;
-  --sidebar-accent-foreground: #e7e9ed;
+  --sidebar-primary: #e6edf3;
+  --sidebar-primary-foreground: #0a0f14;
 
-  --sidebar-border: #292e36;
-  --sidebar-ring: #e7e9ed;
+  --sidebar-accent: #253241;
+  --sidebar-accent-foreground: #e6edf3;
+
+  --sidebar-border: #253241;
+  --sidebar-ring: #e6edf3;
 }
 
 @theme inline {
@@ -189,4 +254,8 @@
   html {
     @apply font-sans;
   }
+}
+
+.dashboard-glow-card {
+  position: relative;
 }

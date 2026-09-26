@@ -12,6 +12,10 @@ import { useUpdateTask } from "../../hook/useUpdateTask";
 
 import type { Task } from "../../services/taskService";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+
 interface TaskFormProps {
   projectId: number;
   task?: Task;
@@ -79,86 +83,74 @@ const TaskForm = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4"
+      className="space-y-6"
     >
-      <div>
-        <label
-          htmlFor="title"
-          className="text-sm text-text"
-        >
+      <div className="space-y-2">
+        <Label htmlFor="title" className="text-text">
           Task Title
-        </label>
+        </Label>
 
-        <input
+        <Input
           id="title"
           type="text"
+          placeholder="Enter task title"
           {...register("title")}
-          className="mt-1 w-full rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none"
+          className="border-border bg-background text-text placeholder:text-text/30"
         />
 
         {errors.title && (
-          <p className="mt-1 text-xs text-text/50">
+          <p className="text-xs text-text/50">
             {errors.title.message}
           </p>
         )}
       </div>
 
-      <div>
-        <label
-          htmlFor="description"
-          className="text-sm text-text"
-        >
+      <div className="space-y-2">
+        <Label htmlFor="description" className="text-text">
           Description
-        </label>
+        </Label>
 
         <textarea
           id="description"
-          rows={3}
+          rows={4}
+          placeholder="Describe what needs to be done..."
           {...register("description")}
-          className="mt-1 w-full rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none"
+          className="flex w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-text outline-none placeholder:text-text/30 transition-colors focus-visible:border-text/40 focus-visible:ring-1 focus-visible:ring-text/20"
         />
 
         {errors.description && (
-          <p className="mt-1 text-xs text-text/50">
+          <p className="text-xs text-text/50">
             {errors.description.message}
           </p>
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div>
-          <label
-            htmlFor="status"
-            className="text-sm text-text"
-          >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="space-y-2">
+          <Label htmlFor="status" className="text-text">
             Status
-          </label>
+          </Label>
 
           <select
             id="status"
             {...register("status")}
-            className="mt-1 w-full rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none"
+            className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-text outline-none transition-colors focus:border-text/40 focus:ring-1 focus:ring-text/20"
           >
             <option value="todo">Todo</option>
-            <option value="in_progress">
-              In Progress
-            </option>
+            <option value="in_progress">In Progress</option>
             <option value="complete">Complete</option>
           </select>
         </div>
 
-        <div>
-          <label
-            htmlFor="priority"
-            className="text-sm text-text"
-          >
+        <div className="space-y-2">
+          <Label htmlFor="priority" className="text-text">
             Priority
-          </label>
+          </Label>
 
           <select
             id="priority"
             {...register("priority")}
-            className="mt-1 w-full rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none"
+            className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-text outline-none transition-colors focus:border-text/40 focus:ring-1 focus:ring-text/20"
           >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
@@ -166,40 +158,39 @@ const TaskForm = ({
           </select>
         </div>
 
-        <div>
-          <label
-            htmlFor="due_date"
-            className="text-sm text-text"
-          >
+        <div className="space-y-2">
+          <Label htmlFor="due_date" className="text-text">
             Due Date
-          </label>
+          </Label>
 
-          <input
+          <Input
             id="due_date"
             type="date"
             {...register("due_date")}
-            className="mt-1 w-full rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none"
+            className="border-border bg-background text-text"
           />
         </div>
       </div>
 
       {isError && (
-        <p className="text-sm text-text/50">
-          Failed to save task.
-        </p>
+        <div className="rounded-md border border-border bg-background px-4 py-3">
+          <p className="text-sm text-text/60">
+            Failed to save task. Please try again.
+          </p>
+        </div>
       )}
 
-      <button
+      <Button
         type="submit"
         disabled={isPending}
-        className="rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text disabled:opacity-40"
+        className="w-full border border-border bg-background text-text hover:bg-surface disabled:opacity-40 sm:w-auto"
       >
         {isPending
           ? "Saving..."
           : task
             ? "Update Task"
             : "Create Task"}
-      </button>
+      </Button>
     </form>
   );
 };

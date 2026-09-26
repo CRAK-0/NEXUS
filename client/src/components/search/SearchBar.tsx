@@ -1,167 +1,269 @@
-import { useState } from "react";
-import { useSearch } from "../../hook/useSearch.ts";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RiSearchLine } from "@remixicon/react";
+
+import { useSearch } from "../../hook/useSearch.ts";
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const searchRef = useRef<HTMLDivElement>(null);
+
   const navigate = useNavigate();
+
   const {
     data,
     isPending,
     isError,
   } = useSearch(query);
 
+  useEffect(() => {
+    const handleOutsideClick = (
+      event: MouseEvent,
+    ) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(
+          event.target as Node,
+        )
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick,
+      );
+    };
+  }, []);
+
   const handleProjectClick = (projectId: number) => {
-  navigate(`/projects/${projectId}`);
-  setQuery("");
-};
+    navigate(`/projects/${projectId}`);
+    setQuery("");
+    setIsOpen(false);
+  };
 
-const handleTaskClick = (projectId: number) => {
-  navigate(`/projects/${projectId}`);
-  setQuery("");
-};
+  const handleTaskClick = (projectId: number) => {
+    navigate(`/projects/${projectId}`);
+    setQuery("");
+    setIsOpen(false);
+  };
 
-const handleNoteClick = () => {
-  navigate("/notes");
-  setQuery("");
-};
+  const handleNoteClick = () => {
+    navigate("/notes");
+    setQuery("");
+    setIsOpen(false);
+  };
 
   const hasQuery = query.trim().length > 0;
 
   return (
-    <div className="relative w-full max-w-md">
+    <div
+      ref={searchRef}
+      className="relative w-full max-w-md"
+    >
       {/* Search input */}
-      <div className="flex items-center rounded-md border border-border bg-surface">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="ml-3 h-4 w-4 shrink-0 text-text/50"
-        >
-          <circle
-            cx="11"
-            cy="11"
-            r="8"
-          />
 
-          <path d="m21 21-4.3-4.3" />
-        </svg>
+      <div
+        className="flex h-10 items-center rounded-lg border border-border bg-surface transition-colors focus-within:border-text/30"
+        onClick={() => {
+          if (hasQuery) {
+            setIsOpen(true);
+          }
+        }}
+      >
+        <RiSearchLine
+          size={17}
+          className="ml-3 shrink-0 text-text/40"
+        />
 
         <input
           type="text"
           value={query}
-          onChange={(event) =>
-            setQuery(event.target.value)
-          }
-          placeholder="Search..."
-          className="w-full bg-transparent px-3 py-2 text-sm text-text outline-none placeholder:text-text/40"
+          onFocus={() => {
+            if (hasQuery) {
+              setIsOpen(true);
+            }
+          }}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setIsOpen(true);
+          }}
+          placeholder="Search workspace..."
+          className="h-full w-full bg-transparent px-3 text-sm text-text outline-none placeholder:text-text/35"
         />
       </div>
 
       {/* Search results */}
-      {hasQuery && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-md border border-border bg-surface">
+
+      {hasQuery && isOpen && (
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-border bg-surface">
+          {/* Loading */}
+
           {isPending && (
-            <p className="p-4 text-sm text-text/50">
-              Searching...
-            </p>
+            <div className="px-4 py-5 text-center">
+              <p className="text-sm text-text/50">
+                Searching...
+              </p>
+            </div>
           )}
+
+          {/* Error */}
 
           {isError && (
-            <p className="p-4 text-sm text-text/50">
-              Search failed.
-            </p>
+            <div className="px-4 py-5 text-center">
+              <p className="text-sm text-text/50">
+                Search failed.
+              </p>
+            </div>
           )}
 
+          {/* Results */}
+
           {data && (
-            <div className="p-2">
+            <div className="max-h-96 overflow-y-auto p-2">
               {/* Projects */}
+
               {data.results.projects.length > 0 && (
                 <div>
-                  <p className="px-3 py-2 text-xs font-medium uppercase tracking-wide text-text/40">
+                  <p className="px-3 pb-2 pt-1 text-[11px] font-medium uppercase tracking-wider text-text/35">
                     Projects
                   </p>
 
-                  {data.results.projects.map(
-                    (project) => (
-                      <div
-                        key={project.id}
-                        onClick={() => handleProjectClick(Number(project.id))}
-                        className="cursor-pointer ..."
-                      >
-                        <p>{project.name}</p>
+                  <div className="space-y-1">
+                    {data.results.projects.map(
+                      (project) => (
+                        <button
+                          key={project.id}
+                          type="button"
+                          onClick={() =>
+                            handleProjectClick(
+                              Number(project.id),
+                            )
+                          }
+                          className="w-full rounded-md px-3 py-2.5 text-left transition-colors hover:bg-background"
+                        >
+                          <p className="truncate text-sm font-medium text-text">
+                            {project.name}
+                          </p>
 
-                        {project.description && (
-                          <p>{project.description}</p>
-                        )}
-                      </div>
-                    ),
-                  )}
+                          {project.description && (
+                            <p className="mt-1 truncate text-xs text-text/40">
+                              {project.description}
+                            </p>
+                          )}
+                        </button>
+                      ),
+                    )}
+                  </div>
                 </div>
               )}
 
               {/* Tasks */}
+
               {data.results.tasks.length > 0 && (
-                <div className="mt-2">
-                  <p className="px-3 py-2 text-xs font-medium uppercase tracking-wide text-text/40">
+                <div
+                  className={
+                    data.results.projects.length > 0
+                      ? "mt-3 border-t border-border pt-2"
+                      : ""
+                  }
+                >
+                  <p className="px-3 pb-2 pt-1 text-[11px] font-medium uppercase tracking-wider text-text/35">
                     Tasks
                   </p>
 
-                  {data.results.tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="rounded-md px-3 py-2 hover:bg-background"
-                      onClick={() => handleTaskClick(task.project_id)}
-                    >
-                      <p className="text-sm text-text">
-                        {task.title}
-                      </p>
-
-                      {task.description && (
-                        <p className="mt-1 truncate text-xs text-text/50">
-                          {task.description}
+                  <div className="space-y-1">
+                    {data.results.tasks.map((task) => (
+                      <button
+                        key={task.id}
+                        type="button"
+                        onClick={() =>
+                          handleTaskClick(
+                            task.project_id,
+                          )
+                        }
+                        className="w-full rounded-md px-3 py-2.5 text-left transition-colors hover:bg-background"
+                      >
+                        <p className="truncate text-sm font-medium text-text">
+                          {task.title}
                         </p>
-                      )}
-                    </div>
-                  ))}
+
+                        {task.description && (
+                          <p className="mt-1 truncate text-xs text-text/40">
+                            {task.description}
+                          </p>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* Notes */}
+
               {data.results.notes.length > 0 && (
-                <div className="mt-2">
-                  <p className="px-3 py-2 text-xs font-medium uppercase tracking-wide text-text/40">
+                <div
+                  className={
+                    data.results.projects.length > 0 ||
+                    data.results.tasks.length > 0
+                      ? "mt-3 border-t border-border pt-2"
+                      : ""
+                  }
+                >
+                  <p className="px-3 pb-2 pt-1 text-[11px] font-medium uppercase tracking-wider text-text/35">
                     Notes
                   </p>
 
-                  {data.results.notes.map((note) => (
-                    <div
-                      key={note.id}
-                      className="rounded-md px-3 py-2 hover:bg-background"
-                      onClick={handleNoteClick}
-                    >
-                      <p className="text-sm text-text">
-                        {note.title}
-                      </p>
+                  <div className="space-y-1">
+                    {data.results.notes.map((note) => (
+                      <button
+                        key={note.id}
+                        type="button"
+                        onClick={handleNoteClick}
+                        className="w-full rounded-md px-3 py-2.5 text-left transition-colors hover:bg-background"
+                      >
+                        <p className="truncate text-sm font-medium text-text">
+                          {note.title}
+                        </p>
 
-                      <p className="mt-1 truncate text-xs text-text/50">
-                        {note.content}
-                      </p>
-                    </div>
-                  ))}
+                        <p className="mt-1 truncate text-xs text-text/40">
+                          {note.content}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* No results */}
+
               {!isPending &&
                 data.results.projects.length === 0 &&
                 data.results.tasks.length === 0 &&
                 data.results.notes.length === 0 && (
-                  <p className="p-4 text-center text-sm text-text/50">
-                    No results found.
-                  </p>
+                  <div className="px-4 py-8 text-center">
+                    <RiSearchLine
+                      size={20}
+                      className="mx-auto text-text/30"
+                    />
+
+                    <p className="mt-2 text-sm text-text/50">
+                      No results found
+                    </p>
+
+                    <p className="mt-1 text-xs text-text/30">
+                      Try searching for another term.
+                    </p>
+                  </div>
                 )}
             </div>
           )}

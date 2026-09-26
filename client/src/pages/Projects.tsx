@@ -3,10 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { useProjects } from "../hook/useProjects";
 import { useDeleteProject } from "../hook/useDeleteProject";
 import useDebounce from "../hook/useDebounce";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import ProjectForm from "../components/projects/ProjectForm";
 
 import type { Project } from "../services/projectService";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const Projects = () => {
   const [search, setSearch] = useState("");
@@ -22,20 +36,19 @@ const Projects = () => {
     "name" | "created_at" | "updated_at"
   >("created_at");
 
-  const [order, setOrder] = useState<
-    "asc" | "desc"
-  >("desc");
+  const [order, setOrder] = useState<"asc" | "desc">(
+    "desc",
+  );
+
+  const [projectToDelete, setProjectToDelete] =
+  useState<Project | null>(null);
 
   const [editingProject, setEditingProject] =
     useState<Project | null>(null);
 
-  const [isCreating, setIsCreating] =
-    useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
-  const debouncedSearch = useDebounce(
-    search,
-    300,
-  );
+  const debouncedSearch = useDebounce(search, 300);
 
   useEffect(() => {
     setPage(1);
@@ -53,22 +66,43 @@ const Projects = () => {
     page,
   });
 
-  const deleteProjectMutation =
-    useDeleteProject();
+  const deleteProjectMutation = useDeleteProject();
 
   if (isPending) {
     return (
-      <p className="text-sm text-text/50">
-        Loading projects...
-      </p>
+      <div className="space-y-6">
+        <div>
+          <div className="h-8 w-32 animate-pulse rounded-md bg-surface" />
+          <div className="mt-2 h-4 w-56 animate-pulse rounded-md bg-surface" />
+        </div>
+
+        <div className="h-20 animate-pulse rounded-xl border border-border bg-surface" />
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {[1, 2, 3].map((item) => (
+            <div
+              key={item}
+              className="h-48 animate-pulse rounded-xl border border-border bg-surface"
+            />
+          ))}
+        </div>
+      </div>
     );
   }
 
   if (isError) {
     return (
-      <p className="text-sm text-text/50">
-        Unable to load projects.
-      </p>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-lg font-medium text-text">
+            Unable to load projects
+          </h2>
+
+          <p className="mt-1 text-sm text-text/50">
+            Something went wrong while fetching your projects.
+          </p>
+        </div>
+      </div>
     );
   }
 
@@ -78,27 +112,27 @@ const Projects = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl font-semibold text-text">
+          <h1 className="text-3xl font-semibold tracking-tight text-text">
             Projects
           </h1>
 
-          <p className="mt-1 text-sm text-text/60">
-            Manage your projects.
+          <p className="mt-1 text-sm text-text/50">
+            Manage and organize your workspace projects.
           </p>
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={() => {
             setEditingProject(null);
             setIsCreating(true);
           }}
-          className="rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text"
+          className="bg-text text-background hover:bg-text/90"
         >
-          Create Project
-        </button>
+          + New Project
+        </Button>
       </div>
 
       {/* Create / Edit Form */}
@@ -115,202 +149,275 @@ const Projects = () => {
         />
       )}
 
-      {/* Search & Filters */}
-      <div className="space-y-3">
-        <input
-          type="text"
-          placeholder="Search projects..."
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value);
-          }}
-          className="w-full rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none placeholder:text-text/40"
-        />
+      {/* Filters */}
+      <Card className="border-border bg-surface">
+        <CardContent className="p-4">
+          <div className="flex flex-col gap-3 lg:flex-row">
+            <Input
+              type="text"
+              placeholder="Search projects..."
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+              }}
+              className="border-border bg-background text-text placeholder:text-text/30 lg:flex-1"
+            />
 
-        <div className="flex flex-wrap gap-3">
-          <select
-            value={status ?? ""}
-            onChange={(event) => {
-              const value = event.target.value;
+            <div className="flex flex-wrap gap-3">
+              <select
+                value={status ?? ""}
+                onChange={(event) => {
+                  const value = event.target.value;
 
-              setStatus(
-                value === ""
-                  ? undefined
-                  : (value as
-                      | "pending"
-                      | "complete"),
-              );
+                  setStatus(
+                    value === ""
+                      ? undefined
+                      : (value as
+                          | "pending"
+                          | "complete"),
+                  );
 
-              setPage(1);
-            }}
-            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none"
-          >
-            <option value="">All</option>
-            <option value="pending">
-              Pending
-            </option>
-            <option value="complete">
-              Complete
-            </option>
-          </select>
+                  setPage(1);
+                }}
+                className="h-10 rounded-md border border-border bg-background px-3 text-sm text-text outline-none focus:border-text/40"
+              >
+                <option value="">All status</option>
+                <option value="pending">Pending</option>
+                <option value="complete">Complete</option>
+              </select>
 
-          <select
-            value={sort}
-            onChange={(event) => {
-              setSort(
-                event.target.value as
-                  | "name"
-                  | "created_at"
-                  | "updated_at",
-              );
+              <select
+                value={sort}
+                onChange={(event) => {
+                  setSort(
+                    event.target.value as
+                      | "name"
+                      | "created_at"
+                      | "updated_at",
+                  );
 
-              setPage(1);
-            }}
-            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none"
-          >
-            <option value="created_at">
-              Created
-            </option>
-            <option value="updated_at">
-              Updated
-            </option>
-            <option value="name">
-              Name
-            </option>
-          </select>
+                  setPage(1);
+                }}
+                className="h-10 rounded-md border border-border bg-background px-3 text-sm text-text outline-none focus:border-text/40"
+              >
+                <option value="created_at">Created</option>
+                <option value="updated_at">Updated</option>
+                <option value="name">Name</option>
+              </select>
 
-          <select
-            value={order}
-            onChange={(event) => {
-              setOrder(
-                event.target.value as
-                  | "asc"
-                  | "desc",
-              );
+              <select
+                value={order}
+                onChange={(event) => {
+                  setOrder(
+                    event.target.value as
+                      | "asc"
+                      | "desc",
+                  );
 
-              setPage(1);
-            }}
-            className="rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text outline-none"
-          >
-            <option value="desc">
-              Descending
-            </option>
+                  setPage(1);
+                }}
+                className="h-10 rounded-md border border-border bg-background px-3 text-sm text-text outline-none focus:border-text/40"
+              >
+                <option value="desc">Newest</option>
+                <option value="asc">Oldest</option>
+              </select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-            <option value="asc">
-              Ascending
-            </option>
-          </select>
-        </div>
+      {/* Project count */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-text/50">
+          {pagination.total}{" "}
+          {pagination.total === 1 ? "project" : "projects"}
+        </p>
       </div>
 
       {/* Projects */}
       {projects.length === 0 ? (
-        <p className="text-sm text-text/50">
-          No projects yet.
-        </p>
-      ) : (
-        <div className="space-y-3">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="rounded-lg border border-border bg-surface p-5"
-            >
-              <button
-  type="button"
-  onClick={() =>
-    navigate(`/projects/${project.id}`)
-  }
-  className="text-left"
->
-  <h2 className="font-medium text-text">
-    {project.name}
-  </h2>
-
-  <p className="mt-1 text-sm text-text/60">
-    {project.description || "No description"}
-  </p>
-
-  <p className="mt-3 text-xs text-text/50">
-    Status: {project.status}
-  </p>
-</button>
-
-              <div className="mt-4 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCreating(false);
-                    setEditingProject(project);
-                  }}
-                  className="rounded-lg border border-border px-3 py-2 text-sm text-text"
-                >
-                  Edit
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    const confirmed =
-                      window.confirm(
-                        `Delete "${project.name}"?`,
-                      );
-
-                    if (confirmed) {
-                      deleteProjectMutation.mutate(
-                        project.id,
-                      );
-                    }
-                  }}
-                  disabled={
-                    deleteProjectMutation.isPending
-                  }
-                  className="rounded-lg border border-border px-3 py-2 text-sm text-text disabled:opacity-40"
-                >
-                  Delete
-                </button>
-              </div>
+        <Card className="border-border bg-surface">
+          <CardContent className="flex min-h-[260px] flex-col items-center justify-center text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-background text-lg font-semibold text-text">
+              N
             </div>
+
+            <h2 className="mt-4 font-medium text-text">
+              No projects found
+            </h2>
+
+            <p className="mt-1 max-w-sm text-sm text-text/50">
+              {search
+                ? "Try changing your search or filters."
+                : "Create your first project to get started."}
+            </p>
+
+            {!search && !status && (
+              <Button
+                type="button"
+                onClick={() => {
+                  setEditingProject(null);
+                  setIsCreating(true);
+                }}
+                className="mt-5 bg-text text-background hover:bg-text/90"
+              >
+                Create your first project
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {projects.map((project) => (
+            <Card
+              key={project.id}
+              className="border-border bg-surface transition-colors hover:border-text/30"
+            >
+              <CardContent className="flex h-full flex-col p-5">
+                {/* Project information */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    navigate(`/projects/${project.id}`)
+                  }
+                  className="text-left"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <h2 className="font-medium text-text">
+                      {project.name}
+                    </h2>
+
+                    <span className="shrink-0 rounded-full border border-border px-2.5 py-1 text-[11px] font-medium capitalize text-text/60">
+                      {project.status}
+                    </span>
+                  </div>
+
+                  <p className="mt-3 line-clamp-2 text-sm leading-6 text-text/50">
+                    {project.description ||
+                      "No description provided."}
+                  </p>
+                </button>
+
+                {/* Actions */}
+                <div className="mt-auto flex gap-2 pt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setIsCreating(false);
+                      setEditingProject(project);
+                    }}
+                    className="border-border bg-transparent text-text hover:bg-background"
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setProjectToDelete(project);
+                    }}
+                    disabled={
+                      deleteProjectMutation.isPending
+                    }
+                    className="border-border bg-transparent text-text hover:bg-background disabled:opacity-40"
+                  >
+                    {deleteProjectMutation.isPending
+                      ? "Deleting..."
+                      : "Delete"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          disabled={pagination.page === 1}
-          onClick={() =>
-            setPage(
-              (current) => current - 1,
-            )
-          }
-          className="rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Previous
-        </button>
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between border-t border-border pt-5">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pagination.page === 1}
+            onClick={() =>
+              setPage((current) => current - 1)
+            }
+            className="border-border bg-surface text-text hover:bg-background disabled:opacity-30"
+          >
+            Previous
+          </Button>
 
-        <p className="text-sm text-text/50">
-          Page {pagination.page} of{" "}
-          {pagination.totalPages}
-        </p>
+          <p className="text-sm text-text/50">
+            Page{" "}
+            <span className="text-text">
+              {pagination.page}
+            </span>{" "}
+            of {pagination.totalPages}
+          </p>
 
-        <button
-          type="button"
-          disabled={
-            pagination.page ===
-            pagination.totalPages
+          <Button
+            type="button"
+            variant="outline"
+            disabled={
+              pagination.page === pagination.totalPages
+            }
+            onClick={() =>
+              setPage((current) => current + 1)
+            }
+            className="border-border bg-surface text-text hover:bg-background disabled:opacity-30"
+          >
+            Next
+          </Button>
+        </div>
+      )}
+      <AlertDialog
+  open={!!projectToDelete}
+  onOpenChange={(open) => {
+    if (!open) {
+      setProjectToDelete(null);
+    }
+  }}
+>
+  <AlertDialogContent className="border-border bg-surface text-text">
+    <AlertDialogHeader>
+      <AlertDialogTitle>
+        Delete project?
+      </AlertDialogTitle>
+
+      <AlertDialogDescription className="text-text/50">
+        Are you sure you want to delete{" "}
+        <span className="text-text">
+          "{projectToDelete?.name}"
+        </span>
+        ? This action cannot be undone.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+
+    <AlertDialogFooter>
+      <AlertDialogCancel className="border-border bg-background text-text hover:bg-surface">
+        Cancel
+      </AlertDialogCancel>
+
+      <AlertDialogAction
+        onClick={() => {
+          if (projectToDelete) {
+            deleteProjectMutation.mutate(
+              projectToDelete.id,
+            );
+            setProjectToDelete(null);
           }
-          onClick={() =>
-            setPage(
-              (current) => current + 1,
-            )
-          }
-          className="rounded-lg border border-border bg-surface px-4 py-2 text-sm text-text disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Next
-        </button>
-      </div>
+        }}
+        className="border border-border bg-background text-text hover:bg-surface"
+      >
+        Delete
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
     </div>
+    
   );
 };
 

@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthContext.tsx";
 import "./index.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
+
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
