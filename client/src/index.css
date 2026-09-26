@@ -1,15 +1,192 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/noto-sans";
+@import "@fontsource-variable/montserrat";
+
+@custom-variant dark (&:is(.dark *));
+
 :root {
+  /* NEXUS colors */
   --color-background: #0d0f12;
   --color-surface: #171a1f;
   --color-border: #292e36;
   --color-text: #e7e9ed;
+
+  /* shadcn semantic colors */
+  --background: #0d0f12;
+  --foreground: #e7e9ed;
+
+  --card: #171a1f;
+  --card-foreground: #e7e9ed;
+
+  --popover: #171a1f;
+  --popover-foreground: #e7e9ed;
+
+  --primary: #e7e9ed;
+  --primary-foreground: #0d0f12;
+
+  --secondary: #292e36;
+  --secondary-foreground: #e7e9ed;
+
+  --muted: #292e36;
+  --muted-foreground: #e7e9ed;
+
+  --accent: #292e36;
+  --accent-foreground: #e7e9ed;
+
+  --destructive: #292e36;
+  --destructive-foreground: #e7e9ed;
+
+  --border: #292e36;
+  --input: #292e36;
+  --ring: #e7e9ed;
+
+  /* Charts */
+  --chart-1: #e7e9ed;
+  --chart-2: #292e36;
+  --chart-3: #171a1f;
+  --chart-4: #0d0f12;
+  --chart-5: #e7e9ed;
+
+  --radius: 0.625rem;
+
+  /* Sidebar */
+  --sidebar: #171a1f;
+  --sidebar-foreground: #e7e9ed;
+
+  --sidebar-primary: #e7e9ed;
+  --sidebar-primary-foreground: #0d0f12;
+
+  --sidebar-accent: #292e36;
+  --sidebar-accent-foreground: #e7e9ed;
+
+  --sidebar-border: #292e36;
+  --sidebar-ring: #e7e9ed;
 }
 
-@import "tailwindcss";
+/*
+  Keep shadcn's dark mode compatible with the NEXUS theme.
+  For now NEXUS uses one dark visual system.
+*/
+.dark {
+  --background: #0d0f12;
+  --foreground: #e7e9ed;
 
-@theme {
+  --card: #171a1f;
+  --card-foreground: #e7e9ed;
+
+  --popover: #171a1f;
+  --popover-foreground: #e7e9ed;
+
+  --primary: #e7e9ed;
+  --primary-foreground: #0d0f12;
+
+  --secondary: #292e36;
+  --secondary-foreground: #e7e9ed;
+
+  --muted: #292e36;
+  --muted-foreground: #e7e9ed;
+
+  --accent: #292e36;
+  --accent-foreground: #e7e9ed;
+
+  --destructive: #292e36;
+  --destructive-foreground: #e7e9ed;
+
+  --border: #292e36;
+  --input: #292e36;
+  --ring: #e7e9ed;
+
+  --sidebar: #171a1f;
+  --sidebar-foreground: #e7e9ed;
+
+  --sidebar-primary: #e7e9ed;
+  --sidebar-primary-foreground: #0d0f12;
+
+  --sidebar-accent: #292e36;
+  --sidebar-accent-foreground: #e7e9ed;
+
+  --sidebar-border: #292e36;
+  --sidebar-ring: #e7e9ed;
+}
+
+@theme inline {
+  /* Existing NEXUS tokens */
   --color-background: var(--color-background);
   --color-surface: var(--color-surface);
   --color-border: var(--color-border);
   --color-text: var(--color-text);
+
+  /* shadcn tokens */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+
+  --font-sans: "Noto Sans Variable", sans-serif;
+  --font-heading: "Montserrat Variable", sans-serif;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html {
+    @apply font-sans;
+  }
 }
