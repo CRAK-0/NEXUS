@@ -7,6 +7,7 @@ import Projects from "../pages/Projects.tsx";
 import Tasks from "../pages/Tasks.tsx";
 import Notes from "../pages/Notes.tsx";
 import Activity from "../pages/Activity.tsx";
+import ProjectDetails from "../pages/ProjectDetails.tsx";
 
 const AppRoutes = () => {
   return (
@@ -17,6 +18,10 @@ const AppRoutes = () => {
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Projects />} />
+          <Route
+            path="/projects/:projectId"
+            element={<ProjectDetails />}
+          />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/activity" element={<Activity />} />

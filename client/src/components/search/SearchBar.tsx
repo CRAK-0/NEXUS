@@ -1,14 +1,30 @@
 import { useState } from "react";
-import { useSearch } from "../../hook/useSearch";
+import { useSearch } from "../../hook/useSearch.ts";
+import { useNavigate } from "react-router-dom";
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
-
+  const navigate = useNavigate();
   const {
     data,
     isPending,
     isError,
   } = useSearch(query);
+
+  const handleProjectClick = (projectId: number) => {
+  navigate(`/projects/${projectId}`);
+  setQuery("");
+};
+
+const handleTaskClick = (projectId: number) => {
+  navigate(`/projects/${projectId}`);
+  setQuery("");
+};
+
+const handleNoteClick = () => {
+  navigate("/notes");
+  setQuery("");
+};
 
   const hasQuery = query.trim().length > 0;
 
@@ -72,16 +88,13 @@ const SearchBar = () => {
                     (project) => (
                       <div
                         key={project.id}
-                        className="rounded-md px-3 py-2 hover:bg-background"
+                        onClick={() => handleProjectClick(Number(project.id))}
+                        className="cursor-pointer ..."
                       >
-                        <p className="text-sm text-text">
-                          {project.name}
-                        </p>
+                        <p>{project.name}</p>
 
                         {project.description && (
-                          <p className="mt-1 truncate text-xs text-text/50">
-                            {project.description}
-                          </p>
+                          <p>{project.description}</p>
                         )}
                       </div>
                     ),
@@ -100,6 +113,7 @@ const SearchBar = () => {
                     <div
                       key={task.id}
                       className="rounded-md px-3 py-2 hover:bg-background"
+                      onClick={() => handleTaskClick(task.project_id)}
                     >
                       <p className="text-sm text-text">
                         {task.title}
@@ -126,6 +140,7 @@ const SearchBar = () => {
                     <div
                       key={note.id}
                       className="rounded-md px-3 py-2 hover:bg-background"
+                      onClick={handleNoteClick}
                     >
                       <p className="text-sm text-text">
                         {note.title}

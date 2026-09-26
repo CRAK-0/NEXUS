@@ -85,3 +85,9 @@ export const deleteTask = async (
 ): Promise<void> => {
   await api.delete(`/projects/tasks/${taskId}`);
 };
+
+export const getAllTasks = async (): Promise<TasksResponse> => {
+  const response = await api.get("/tasks");
+
+  return response.data;
+};

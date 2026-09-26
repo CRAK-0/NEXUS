@@ -185,3 +185,16 @@ export const deleteProjectForUser = async (userId, projectId) => {
     client.release();
   }
 };
+export const getProjectByIdForUser = async (userId, projectId) => {
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM projects
+    WHERE id = $1
+    AND user_id = $2
+    `,
+    [projectId, userId],
+  );
+
+  return result.rows[0] || null;
+};

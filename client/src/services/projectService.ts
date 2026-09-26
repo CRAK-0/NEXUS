@@ -47,6 +47,16 @@ export const getProjects = async (
   return response.data;
 };
 
+export const getProject = async (
+  projectId: number,
+): Promise<Project> => {
+  const response = await api.get(
+    `/projects/${projectId}`,
+  );
+
+  return response.data.project;
+};
+
 export interface CreateProjectData {
   name: string;
   description?: string;

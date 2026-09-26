@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createProject,
   deleteProject,
+  getProject,
   getProjects,
   updateProject,
 } from "../controllers/projects.controller.js";
@@ -16,6 +17,7 @@ import {
 const router = Router();
 
 router.get("/", validate(projectQuerySchema, "query"), getProjects);
+router.get("/:id", validate(projectIdSchema, "params"), getProject);
 router.post("/", validate(projectBodySchema, "body"), createProject);
 router.patch(
   "/:id",

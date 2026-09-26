@@ -1,6 +1,7 @@
 import { useProjects } from "../../hook/useProjects.ts";
 import { useTasks } from "../../hook/useTasks.ts";
 import { useNotes } from "../../hook/useNotes.ts"; 
+import { useAllTasks } from "../../hook/useAllTasks.ts";
 
 const DashboardStats = () => {
   const {
@@ -15,23 +16,16 @@ const {
   isError: notesError,
 } = useNotes();
 
-  const {
+const {
   data: tasksData,
   isPending: tasksPending,
-  isError: tasksError,
-  error: tasksQueryError,
-} = useTasks();
-  console.log("Tasks:", {
-  tasksData,
-  tasksPending,
-  tasksError,
-});
+  isError:tasksError,
+} = useAllTasks();
 
   const projectCount =
     projectsData?.projects.pagination.total ?? 0;
 
-  const taskCount =
-    tasksData?.tasks.length ?? 0;
+const taskCount = tasksData?.tasks.length ?? 0;
 
     const noteCount = notesData?.notes.length ?? 0;
 

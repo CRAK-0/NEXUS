@@ -1,6 +1,7 @@
 import {
   createProjectForUser,
   deleteProjectForUser,
+  getProjectByIdForUser,
   getProjectsForUser,
   updateProjectForUser,
 } from "../services/projects.service.js";
@@ -90,6 +91,27 @@ export const deleteProject = async (req, res, next) => {
     res.json({
       success: true,
       project: deleteValue,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getProject = async (req, res, next) => {
+  try {
+    const { id } = req.validated.params;
+
+    const project = await getProjectByIdForUser(req.user.id, id);
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      project,
     });
   } catch (error) {
     next(error);

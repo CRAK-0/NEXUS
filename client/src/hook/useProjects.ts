@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+
 import {
   getProjects,
   type GetProjectsParams,
@@ -8,5 +9,6 @@ export const useProjects = (params?: GetProjectsParams) => {
   return useQuery({
     queryKey: ["projects", params],
     queryFn: () => getProjects(params),
+    placeholderData: keepPreviousData,
   });
 };
